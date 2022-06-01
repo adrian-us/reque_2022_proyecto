@@ -31,6 +31,7 @@ public class VentanaBusqueda extends javax.swing.JFrame {
         objListDoc = new javax.swing.JList<>();
         btnBuscar = new javax.swing.JButton();
         txfBuscar = new javax.swing.JTextField();
+        btnAbrir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -50,6 +51,8 @@ public class VentanaBusqueda extends javax.swing.JFrame {
                 txfBuscarActionPerformed(evt);
             }
         });
+
+        btnAbrir.setText("Abrir");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -72,6 +75,10 @@ public class VentanaBusqueda extends javax.swing.JFrame {
                                 .addComponent(txfBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 684, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 206, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnAbrir)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -83,8 +90,9 @@ public class VentanaBusqueda extends javax.swing.JFrame {
                     .addComponent(btnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txfBuscar))
                 .addGap(42, 42, 42)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 607, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 588, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnAbrir))
         );
 
         pack();
@@ -134,6 +142,7 @@ public class VentanaBusqueda extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAbrir;
     private javax.swing.JButton btnBuscar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -199,6 +208,10 @@ public class VentanaBusqueda extends javax.swing.JFrame {
 
     public void setJListModel(javax.swing.DefaultListModel model){
         this.objListDoc.setModel(model);
+    }
+    
+    public javax.swing.JButton getBtnAbrir() {
+        return btnAbrir;
     }
     
     /**

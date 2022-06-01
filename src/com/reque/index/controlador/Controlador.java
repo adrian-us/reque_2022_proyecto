@@ -24,8 +24,8 @@ public class Controlador {
     VentanaBusqueda ventanaBusqueda = new VentanaBusqueda();
     
     // Modelo (Sistema)
-    String indexDir = "C:\\SAE\\Index" ;
-    String dataDir = "C:\\SAE\\Data" ;
+    String indexDir = "C:\\SAE\\Index";
+    String dataDir = "C:\\SAE\\Data";
     
     // Controlador
     Indexer indexer;
@@ -50,10 +50,12 @@ public class Controlador {
     
     ActionListener btnAbrir_ActionPerformed = new ActionListener() {
         @Override
-        public void 
-    }
+        public void actionPerformed(ActionEvent e) {
+            abrirArchivo(ventanaBusqueda.getObjListDoc().getSelectedValue());
+        }
+    };
     
-    ActionListener btnBuscar_ActionPerfomed = new ActionListener() {
+    ActionListener btnBuscar_ActionPerformed = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
@@ -79,7 +81,7 @@ public class Controlador {
                 for (ScoreDoc scoreDoc : hits.scoreDocs){
                     Document doc = searcher.getDocument(scoreDoc);
                     System.out.println("File : " + doc.get("filepath"));
-                    listModel.addElement("File : " + doc.get("filepath"));
+                    listModel.addElement(doc.get("filepath"));
                 }
                 
                 ventanaBusqueda.setJListModel(listModel);
@@ -95,7 +97,8 @@ public class Controlador {
     
     public Controlador() {
         ventanaLogin.getBtnIngresar().addActionListener(btnIngresar_ActionPerformed);
-        ventanaBusqueda.getBtnBuscar().addActionListener(btnBuscar_ActionPerfmoed);
+        ventanaBusqueda.getBtnBuscar().addActionListener(btnBuscar_ActionPerformed);
+        ventanaBusqueda.getBtnAbrir().addActionListener(btnAbrir_ActionPerformed);
     }
 
     private void createIndex() throws IOException {
@@ -140,6 +143,7 @@ public class Controlador {
     
 
     public static void main(String[] args) {
+
         Controlador main = new Controlador();
         
         main.ventanaLogin.setVisible(true);
