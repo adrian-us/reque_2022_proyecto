@@ -1,4 +1,4 @@
-package com.reque.index;
+package com.reque.index.controlador;
 
 import java.io.File;
 import java.io.FileFilter;

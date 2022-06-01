@@ -1,4 +1,4 @@
-package com.reque.index;
+package com.reque.index.controlador;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -31,6 +31,7 @@ public class Searcher {
 
     public TopDocs search(String searchQuery) throws IOException, ParseException {
         query = queryParser.parse(searchQuery);
+        // primeros 'n' documentos
         return indexSearcher.search(query, 10);
     }
 
