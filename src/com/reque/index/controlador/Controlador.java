@@ -10,7 +10,6 @@ import org.apache.lucene.search.TopDocs;
 import com.reque.index.vista.VentanaLogin;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-//import java.io.File;
 import java.awt.Desktop;
 import java.io.*;
 import java.util.logging.Level;
@@ -24,8 +23,8 @@ public class Controlador {
     VentanaBusqueda ventanaBusqueda = new VentanaBusqueda();
     
     // Modelo (Sistema)
-    String indexDir = "C:\\SAE\\Index";
-    String dataDir = "C:\\SAE\\Data";
+    String indexDir = "C:\\Lucene\\Index";
+    String dataDir = "C:\\Lucene\\Data";
     
     // Controlador
     Indexer indexer;
@@ -38,6 +37,7 @@ public class Controlador {
                 System.out.println("acceso");
                 // Si accede se pasa a la ventana de busque
                 ventanaLogin.dispose();
+                listar();
                 // aca se hace visible la ventna de busqueda
                 ventanaBusqueda.setVisible(true);
             } else {
@@ -48,47 +48,62 @@ public class Controlador {
         }
     };
     
+    ActionListener btnCerrar_ActionPerformed = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.exit(0);
+        }
+    };
+    
     ActionListener btnAbrir_ActionPerformed = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            abrirArchivo(ventanaBusqueda.getObjListDoc().getSelectedValue());
+            if(ventanaBusqueda.getObjListDoc().getSelectedValue()==null){
+                JOptionPane.showMessageDialog (null, "Por favor seleccione un archivo", "Error", JOptionPane.ERROR_MESSAGE);
+            }else{
+                abrirArchivo(ventanaBusqueda.getObjListDoc().getSelectedValue());
+            }
         }
     };
     
     ActionListener btnBuscar_ActionPerformed = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            try {
-                // borrar directorio de indice antes de crear otro
-                File index = new File(indexDir);
-                String[] entradas = index.list();
-                for (String entrada : entradas){
-                    File archivo = new File(index.getPath(),entrada);
-                    archivo.delete();
+            if (ventanaBusqueda.getTxfBuscar().getText().equals("")){
+                listar();
+            }else{
+                try {
+                    // borrar directorio de indice antes de crear otro
+                    File index = new File(indexDir);
+                    String[] entradas = index.list();
+                    for (String entrada : entradas){
+                        File archivo = new File(index.getPath(),entrada);
+                        archivo.delete();
+                    }
+                    // actualizar indices
+                    createIndex();
+                    // buscar
+                    searcher = new Searcher(indexDir);
+                    long startTime = System.currentTimeMillis();
+                    TopDocs hits;
+                    hits = searcher.search(ventanaBusqueda.getTxfBuscar().getText());
+                    long endTime = System.currentTimeMillis();
+                    System.out.println(hits.totalHits + " documents found. Time :" + (endTime - startTime));
+                    // Crear un nuevo modelo para actualizar la JList
+                    DefaultListModel listModel = new DefaultListModel();
+
+                    for (ScoreDoc scoreDoc : hits.scoreDocs){
+                        Document doc = searcher.getDocument(scoreDoc);
+                        System.out.println("File : " + doc.get("filepath"));
+                        listModel.addElement(doc.get("filepath"));
+                    }
+
+                    ventanaBusqueda.setJListModel(listModel);
+
+                    searcher.close();
+                } catch (IOException | ParseException ex ) {
+                    Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                // actualizar indices
-                createIndex();
-                // buscar
-                searcher = new Searcher(indexDir);
-                long startTime = System.currentTimeMillis();
-                TopDocs hits;
-                hits = searcher.search(ventanaBusqueda.getTxfBuscar().getText());
-                long endTime = System.currentTimeMillis();
-                System.out.println(hits.totalHits + " documents found. Time :" + (endTime - startTime));
-                // Crear un nuevo modelo para actualizar la JList
-                DefaultListModel listModel = new DefaultListModel();
-                
-                for (ScoreDoc scoreDoc : hits.scoreDocs){
-                    Document doc = searcher.getDocument(scoreDoc);
-                    System.out.println("File : " + doc.get("filepath"));
-                    listModel.addElement(doc.get("filepath"));
-                }
-                
-                ventanaBusqueda.setJListModel(listModel);
-                
-                searcher.close();
-            } catch (IOException | ParseException ex ) {
-                Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
@@ -97,8 +112,10 @@ public class Controlador {
     
     public Controlador() {
         ventanaLogin.getBtnIngresar().addActionListener(btnIngresar_ActionPerformed);
+        ventanaLogin.getBtnCerrar().addActionListener(btnCerrar_ActionPerformed);
         ventanaBusqueda.getBtnBuscar().addActionListener(btnBuscar_ActionPerformed);
         ventanaBusqueda.getBtnAbrir().addActionListener(btnAbrir_ActionPerformed);
+        ventanaBusqueda.getBtnCerrar().addActionListener(btnCerrar_ActionPerformed);
     }
 
     private void createIndex() throws IOException {
@@ -110,6 +127,16 @@ public class Controlador {
         long endTime = System.currentTimeMillis();
         indexer.close();
         System.out.println(numIndexed+" File indexed, time taken : " + (endTime-startTime)+" ms");
+    }
+    
+    private void listar(){
+        File dr = new File(dataDir);
+        File[] lstFiles = dr.listFiles();
+        DefaultListModel listModel = new DefaultListModel();
+        for(int i = 0; i<lstFiles.length; i++){                   
+            listModel.addElement(dataDir + "\\" + lstFiles[i].getName());
+        }
+        ventanaBusqueda.setJListModel(listModel);
     }
 
     private void search(String searchQuery) throws IOException, ParseException {
@@ -138,7 +165,9 @@ public class Controlador {
             Desktop desktop = Desktop.getDesktop();
             if (file.exists()) //checks file exists or no
                 desktop.open(file); //open the specific file
-        } catch (IOException e){}
+        } catch (IOException e){
+            JOptionPane.showMessageDialog (null, "Ruta incorrecta o archivo imposible de abrir", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
     
 
